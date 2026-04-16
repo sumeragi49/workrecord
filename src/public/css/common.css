@@ -1,0 +1,50 @@
+.header {
+    background: #000000;
+}
+
+.header_inner {
+    display: flex;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1230px;
+    align-items: center;
+}
+
+.header_title {
+    width: 50%;
+    display: flex;
+    align-items: left;
+    justify-content: space-between;
+}
+
+.header_title a {
+    margin: 0 20px;
+    color:#ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.header_nav {
+    width: 50%;
+    display: flex;
+    gap: 20px;
+    justify-content: right;
+}
+
+.nav_content {
+    display: flex;
+    gap: 20px;
+}
+
+.nav_content-list a {
+    background: #000000;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.logout_form button {
+    background: #000000;
+    color: #ffffff;
+    border: none;
+}
