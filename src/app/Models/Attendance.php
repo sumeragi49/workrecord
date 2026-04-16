@@ -42,17 +42,34 @@ class Attendance extends Model
         return $this->hasOne(AttendanceRequest::class);
     }
 
-    public function getWorkDurationAttribute()
+    public function getBreakTotalMinutesAttribute()
     {
-        if (!$this->time_start || !$this->time_end) return 0;
+        $totalMinutes = $this->breaks->reduce(function ($carry, $break) {
+            if ($break->break_start && $break->break_end) {
+                return $carry + $break->break_start->diffInMinutes($break->break_end);
+            }
+            return $carry;
+        }, 0);
 
-        $timeStart = Carbon::parse($this->time_start);
-        $timeEnd = Carbon::parse($this->time_end);
+        if ($totalMinutes === 0) return '00:00';
 
-        $totalBreakMinutes = $this->breaks->sum(function($break) {
-            return Carbon::parse($break['break_start'])->diffInMinutes($break['break_end']);
+        $hours = floor($totalMinutes / 60);
+        $minutes = $totalMinutes % 60;
+
+        return sprintf('%02d:%02d', $hours, $minutes);
+    }
+
+    public function getWorkTotalMinutesAttribute()
+    {
+        if (!$this->time_start || !$this->time_end) return '';
+
+        $totalMinutes = $this->time_start->diffInMinutes($this->time_end);
+        $breakMinutes = $this->breaks->sum(function($break) {
+            return $break->break_start->diffInMinutes($break->break_end);
         });
 
-        return $timeStart->diffInMinutes($timeEnd) - $totalBreakMinutes;
+        $workMinutes = $totalMinutes - $breakMinutes;
+
+        return sprintf('%02d:%02d', floor($workMinutes / 60), $workMinutes % 60);
     }
 }

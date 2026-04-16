@@ -10,17 +10,15 @@
         <div class="index_title">
             <h1>❙ 勤怠一覧</h1>
         </div>
-        <form class="index_calender" action="{{ route('attendances.index') }}" method="get">
+        <form class="index_calender" action="{{ route('attendance.index') }}" method="get">
             <div class="prev_month">
-                <span>←</span>
-                <span>前月</span>
+                <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}">← 先月</a>
             </div>
             <div class="this_month">
                 <input type="month" name="month" value="{{ $month }}" onchange="this.form.submit()">
             </div>
             <div class="next_month">
-                <span>来月</span>
-                <span>→</span>
+                <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}">翌月 →</a>
             </div>
         </form>
         <div class="index_container">
@@ -41,15 +39,19 @@
                             <td>{{ $day['date'] }}</td>
                             <td>{{ $day['attendance']?->time_start?->format('H:i') ?? '' }}</td>
                             <td>{{ $day['attendance']?->time_end?->format('H:i') ?? '' }}</td>
-                            <td>{{ $day['total_break'] > 0 ? $day['total_break'] . '分' : '' }}</td>
                             <td>
-                                @if($day['attendance'] && $day['attendance']->time_end)
-                                {{ $day['attendance']->work_duration }}
+                                @if($day['attendance'])
+                                    {{ $day['attendance']->break_total_minutes }}
                                 @endif
                             </td>
                             <td>
                                 @if($day['attendance'])
-                                    <a class="detail_attendance-link">詳細</a>
+                                    {{ $day['attendance']->work_total_minutes }}
+                                @endif
+                            </td>
+                            <td>
+                                @if($day['attendance'])
+                                    <a class="detail_attendance-link" href="{{ route('attendance.show', $day['attendance']['id']) }}">詳細</a>
                                 @endif
                             </td>
                         </tr>

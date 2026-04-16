@@ -7,7 +7,7 @@
 .index_content-item {
     margin:0px 20%;
     padding-top:50px;
-    padding-bottom:500px;
+    padding-bottom:50px;
     width:60%;
 }
 
@@ -40,8 +40,9 @@
     text-decoration: none;
 }
 
-.this_month h2 {
+.this_month input {
     margin: 0 auto;
+    border: none;
 }
 
 .next_month a {
@@ -83,5 +84,18 @@ table tr:last-child td:first-child {
 .table_items {
     text-align: center;
     background: #ffffff
+}
+
+th {
+    font-weight: 400;
+}
+
+td {
+    font-weight: 400;
+}
+
+td a {
+    color: #000000;
+    text-decoration: none;
 }
 

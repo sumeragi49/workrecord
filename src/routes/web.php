@@ -25,5 +25,7 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/break/end', [AttendanceController::class, 'breakEnd'])->name('break.end');
 
-    Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
+
+    Route::get('/attendance/detail/{attendanceId}', [AttendanceController::class, 'show'])->name('attendance.show');
 });

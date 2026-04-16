@@ -33,7 +33,7 @@ class AttendanceController extends Controller
             }
         }
 
-        return view('attendance', compact('user', 'attendance', 'status'));
+        return view('staff.attendance', compact('user', 'attendance', 'status'));
     }
 
     public function workStart(Request $request)
@@ -117,21 +117,25 @@ class AttendanceController extends Controller
         $user = Auth::user();
 
         $month = $request->input('month', Carbon::now()->format('Y-m'));
+        $targetMonth = Carbon::parse($month);
 
-        $startDate = Carbon::parse($month)->startOfMonth();
-        $endDate = Carbon::parse($month)->endOfMonth();
+        $prevMonth = $targetMonth->copy()->subMonthNoOverflow()->format('Y-m');
+        $nextMonth = $targetMonth->copy()->addMonthNoOverflow()->format('Y-m');
+
+        $startDate = $targetMonth->copy()->startOfMonth();
+        $endDate = $targetMonth->copy()->endOfMonth();
 
         $attendances = Attendance::where('user_id', $user['id'])
                     ->with('breaks')
                     ->whereBetween('time_start', [$startDate, $endDate])
                     ->get()
                     ->keyBy(function($item) {
-                        return Carbon::parse($item->time_start)->format('Y-m-d');
+                        return Carbon::parse($item->time_start)->isoFormat('MM/DD(ddd)');
                     });
 
         $days = [];
             for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-                $currentDate = $date->format('Y-m-d');
+                $currentDate = $date->isoFormat('MM/DD(ddd)');
                 $attendance = $attendances->get($currentDate);
 
                 $totalBreak = $attendance ? $attendance->breaks->sum('duration') : 0;
@@ -143,6 +147,16 @@ class AttendanceController extends Controller
                 ];
             }
 
-        return view('index', compact('user', 'days', 'month'));
+        return view('staff.index', compact('user', 'days', 'month', 'prevMonth', 'nextMonth'));
+    }
+
+    public function show($attendanceId)
+    {
+        $user = Auth::user();
+
+        $attendances = Attendance::with(['breaks'])
+                    -> findOrFail($attendanceId);
+
+        return view('detail', compact('user', 'attendances'));
     }
 }

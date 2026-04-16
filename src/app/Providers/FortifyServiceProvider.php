@@ -46,13 +46,13 @@ class FortifyServiceProvider extends ServiceProvider
         //});
 
         Fortify::registerView(function () {
-            return view('auth.register');
+            return view('auth.staff.register');
         });
 
         $this->app->singleton(RegisterRequest::class, RegisterRequest::class);
 
         Fortify::loginView(function () {
-            return view('auth.login');
+            return view('auth.staff.login');
         });
 
         $this->app->singleton(LoginRequest::class, LoginRequest::class);
