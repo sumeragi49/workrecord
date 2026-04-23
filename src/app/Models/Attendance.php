@@ -17,8 +17,7 @@ class Attendance extends Model
         'time_start',
         'time_end',
         'content',
-        'request',
-        'approval',
+        'status',
     ];
 
     protected $casts = [
@@ -26,6 +25,10 @@ class Attendance extends Model
         'time_start' => 'datetime',
         'time_end' => 'datetime',
     ];
+
+    const STATUS_UNAPPLIED = 0;
+    const STATUS_APPLIED = 1;
+    const STATUS_APPROVED = 2;
 
     public function user()
     {
@@ -40,6 +43,11 @@ class Attendance extends Model
     public function attendanceRequest()
     {
         return $this->hasOne(AttendanceRequest::class);
+    }
+
+    public function getStatusNameAttribute()
+    {
+        return $this->status == 1 ? '承認待ち' : '承認済み';
     }
 
     public function getBreakTotalMinutesAttribute()

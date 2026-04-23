@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\BreakTime;
+use App\Models\AttendanceRequest;
+use App\Models\BreakRequest;
+use App\Http\Requests\CorrectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,6 @@ class AttendanceController extends Controller
     public function attendance()
     {
         $user = Auth::user();
-
 
         $attendance = Attendance::with('breaks')
                     -> where('user_id', $user['id'])
@@ -154,9 +156,83 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        $attendances = Attendance::with(['breaks'])
+        $attendances = Attendance::with(['breaks','attendanceRequest', 'attendanceRequest.breakRequests'])
                     -> findOrFail($attendanceId);
 
-        return view('detail', compact('user', 'attendances'));
+        $breaks = $attendances->breaks->toArray();
+        $attendanceRequest = AttendanceRequest::with('breakRequests')
+                          -> where('attendance_id', $attendanceId)
+                          -> first();
+
+        $breaks[] = [
+            'id' => null,
+            'break_start' => null,
+            'break_end' => null,
+        ];
+
+        $displayDate = $attendanceRequest ?: $attendances;
+
+        return view('staff.detail', compact('user', 'attendances', 'breaks', 'displayDate', 'attendanceRequest'));
+    }
+
+    public function requestStore(CorrectionRequest $request, $attendanceId)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validated();
+
+        $originalRecord = Attendance::with('breaks')->findOrFail($attendanceId);
+
+        $baseDate = Carbon::parse($originalRecord['date']);
+
+        DB::transaction(function () use ($request, $validated, $baseDate, $attendanceId) {
+
+            $attendanceRequest = AttendanceRequest::create([
+                'attendance_id' => $attendanceId,
+                'request_time_start' => $baseDate->copy()->setTimeFromTimeString($validated['request_time_start']),
+                'request_time_end' => $baseDate->copy()->setTimeFromTimeString($validated['request_time_end']),
+                'request_content' => $validated['request_content'],
+            ]);
+
+            if ($request->filled('breaks')) {
+                foreach ($request->breaks as $break) {
+                    if (!empty($break['request_break_start']) && !empty($break['request_break_end'])) {
+                        $attendanceRequest->breakRequests()->create([
+                            'request_break_start' => Carbon::parse($baseDate)->setTimeFromTimeString($break['request_break_start']),
+                            'request_break_end' => Carbon::parse($baseDate)->setTimeFromTimeString($break['request_break_end']),
+                        ]);
+                    }
+
+                    if (!empty($break['new_break_start']) && !empty($break['new_break_end'])) {
+                        $attendanceRequest->breakRequests()->create([
+                            'new_break_start' => Carbon::parse($baseDate)->setTimeFromTimeString($break['new_break_start']),
+                            'new_break_end' => Carbon::parse($baseDate)->setTimeFromTimeString($break['new_break_end']),
+                        ]);
+                    }
+                }
+            }
+
+            Attendance::where('id', $attendanceId)->update(['status' => '1', 'content' => $validated['request_content'] ]);
+        });
+
+        return redirect()->back();
+    }
+
+    public function requestList(Request $request)
+    {
+        $user = Auth::user();
+
+        $status = $request->query('status', '1');
+
+        $attendances = Attendance::when($status == 1, function ($query) {
+            return $query->where('status', '1');
+        })
+                    ->when($status == 2, function ($query) {
+            return $query->where('status', '2');
+        })
+                    -> orderBy('date', 'asc')
+                    -> paginate(10);
+
+        return view('staff.requestList',compact('user', 'status', 'attendances'));
     }
 }

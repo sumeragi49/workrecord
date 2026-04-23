@@ -1,56 +1,53 @@
-.index_content {
-    width:100%;
+.request-list-content {
+    width: 100%;
     background: #f0f0f0;
     align-items: center;
 }
 
-.index_content-item {
-    margin:0px 20%;
-    padding-top:50px;
-    padding-bottom:50px;
-    width:60%;
+.request-list-item {
+    margin: 0px 20%;
+    padding-top: 50px;
+    padding-bottom: 100%;
+    width: 60%;
 }
 
-.index_title {
+.request-item-title {
     margin: 0 auto;
     width: 100%;
 }
 
-.index_title h1{
-    margin:30px auto;
+.request-list-title h1 {
+    margin: 30px auto;
     color: #000000;
     font-weight: bold;
     font-size: 24px;
 }
 
-.index_calender {
-    margin-bottom: 30px;
-    padding:5px;
-    background: #ffffff;
-    display: flex;
-    border: 1px solid #000000;
-    border:none;
-    border-radius:5px;
-    align-items: center;
-    justify-content: space-between;
+.request-status {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #000000;
+    margin-bottom:30px;
 }
 
-.prev_month a {
-    color: #000000;
+.request-status a{
+    margin-left: 50px;
+    padding-right: 50px;
     text-decoration: none;
-}
-
-.this_month input {
-    margin: 0 auto;
-    border: none;
-}
-
-.next_month a {
     color: #000000;
-    text-decoration: none;
 }
 
-table {
+.tab-link.is-active {
+    font-weight: bold;
+    color:#000000;
+}
+
+.request-list-table {
+    display:flex;
+    justify-content: center;
+}
+
+.request-list-table table{
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0 3px;
     border-radius: 5px;
@@ -72,16 +69,12 @@ table tr:last-child td:first-child {
     border-bottom-left-radius: 5px;
 }
 
-.table_content {
-    width: 100%;
-}
-
-.table_heading {
+.table-heading {
     text-align: center;
-    background:#ffffff
+    background: #ffffff
 }
 
-.table_items {
+.table-items {
     text-align: center;
     background: #ffffff
 }

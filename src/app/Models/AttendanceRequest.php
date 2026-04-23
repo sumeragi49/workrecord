@@ -10,12 +10,15 @@ class AttendanceRequest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'attendance_id',
-        'date',
         'request_time_start',
         'request_time_end',
-        'content',
+        'request_content',
+    ];
+
+    protected $casts = [
+        'request_time_start' => 'datetime',
+        'request_time_end' => 'datetime',
     ];
 
     public function user()
@@ -26,5 +29,10 @@ class AttendanceRequest extends Model
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);
+    }
+
+    public function breakRequests()
+    {
+        return $this->hasMany(BreakRequest::class);
     }
 }

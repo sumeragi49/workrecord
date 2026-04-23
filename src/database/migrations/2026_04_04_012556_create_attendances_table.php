@@ -20,8 +20,7 @@ class CreateAttendancesTable extends Migration
             $table->datetime('time_start')->nullable();
             $table->datetime('time_end')->nullable();
             $table->string('content', 255)->nullable();
-            $table->tinyInteger('request')->default(0);
-            $table->tinyInteger('approval')->default(0);
+            $table->tinyInteger('status')->default(0)->comment('0:未申請, 1:申請, 2:承認');
             $table->timestamps();
 
             $table->unique(['user_id', 'date']);

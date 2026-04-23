@@ -28,4 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
 
     Route::get('/attendance/detail/{attendanceId}', [AttendanceController::class, 'show'])->name('attendance.show');
+
+    Route::post('/attendance/detail/store/{attendanceId}', [AttendanceController::class, 'requestStore'])->name('attendance.request');
+
+    Route::get('/stamp_correction_request/list',[AttendanceController::class, 'requestList'])->name('request.list');
 });

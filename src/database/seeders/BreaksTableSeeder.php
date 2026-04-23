@@ -22,28 +22,28 @@ class BreaksTableSeeder extends Seeder
         DB::table('breaks')->insert($param);
 
         $param = [
-            'attendance_id' => '1',
+            'attendance_id' => '2',
             'break_start' => '2026-01-02 13:00:00',
             'break_end' => '2026-01-02 14:00:00',
         ];
         DB::table('breaks')->insert($param);
 
         $param = [
-            'attendance_id' => '1',
+            'attendance_id' => '3',
             'break_start' => '2026-01-03 13:00:00',
             'break_end' => '2026-01-03 14:00:00',
         ];
         DB::table('breaks')->insert($param);
 
         $param = [
-            'attendance_id' => '1',
+            'attendance_id' => '4',
             'break_start' => '2026-01-04 13:00:00',
             'break_end' => '2026-01-04 14:00:00',
         ];
         DB::table('breaks')->insert($param);
 
         $param = [
-            'attendance_id' => '1',
+            'attendance_id' => '5',
             'break_start' => '2026-01-05 13:00:00',
             'break_end' => '2026-01-05 14:00:00',
         ];

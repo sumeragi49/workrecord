@@ -38,7 +38,6 @@ class AttendancesTableSeeder extends Seeder
             'time_start' => '2026-01-03 10:20:00',
             'time_end' => '2026-01-03 18:00:00',
             'content' => '電車遅延のため遅刻',
-            'request' => '1',
         ];
         DB::table('attendances')->insert($param);
 
@@ -47,9 +46,10 @@ class AttendancesTableSeeder extends Seeder
             'date' => '2026-01-04',
             'time_start' => '2026-01-04 10:15:00',
             'time_end' => '2026-01-04 18:00:00',
-            'content' => '電車遅延のため遅刻',
-            'request' => '1',
-            'approval' => '1',
+            'content' => '遅延のため',
+            'status' => '2',
+            'created_at' => '2026-01-04 10:15:00',
+            'updated_at' => '2026-04-22 00:00:00',
         ];
         DB::table('attendances')->insert($param);
 
@@ -58,7 +58,10 @@ class AttendancesTableSeeder extends Seeder
             'date' => '2026-01-05',
             'time_start' => '2026-01-05 10:00:00',
             'time_end' => '2026-01-05 18:00:00',
-            'content' => '',
+            'content' => '遅延のため',
+            'status' => '2',
+            'created_at' => '2026-01-05 10:00:00',
+            'updated_at' => '2026-04-22 00:00:00',
         ];
         DB::table('attendances')->insert($param);
     }

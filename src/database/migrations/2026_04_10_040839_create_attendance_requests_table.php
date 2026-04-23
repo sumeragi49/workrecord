@@ -15,12 +15,10 @@ class CreateAttendanceRequestsTable extends Migration
     {
         Schema::create('attendance_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->date('date');
             $table->datetime('request_time_start')->nullable();
             $table->datetime('request_time_end')->nullable();
-            $table->string('content', 255);
+            $table->string('request_content', 255);
             $table->timestamps();
         });
     }
