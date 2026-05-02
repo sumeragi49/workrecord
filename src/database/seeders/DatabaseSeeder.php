@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Attendance;
+use App\Models\BreakTime;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,8 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(UsersTableSeeder::class);
-        $this->call(AttendancesTableSeeder::class);
-        $this->call(BreaksTableSeeder::class);
+        $this->call([
+            UsersTableSeeder::class,
+            AttendancesTableSeeder::class,
+        ]);
     }
 }

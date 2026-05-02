@@ -9,6 +9,8 @@ class AttendanceRequest extends Model
 {
     use HasFactory;
 
+    protected $table = 'attendance_correct_requests';
+
     protected $fillable = [
         'attendance_id',
         'request_time_start',
@@ -33,6 +35,6 @@ class AttendanceRequest extends Model
 
     public function breakRequests()
     {
-        return $this->hasMany(BreakRequest::class);
+        return $this->hasMany(BreakRequest::class, 'attendance_correct_request_id');
     }
 }

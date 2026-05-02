@@ -51,7 +51,6 @@
 }
 
 .attendance_table td {
-    display:flex;
     background: #fff;
     text-align: left;
     width: 100%;
@@ -69,6 +68,10 @@ td textarea {
 
 .form_item input {
     margin-right: 15%;
+}
+
+.form-item-content {
+    display:flex;
 }
 
 .form_item-date span {

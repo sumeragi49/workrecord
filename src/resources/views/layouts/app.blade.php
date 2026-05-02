@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 
+@php
+    $logoutRoute = (auth()->user() && auth()->user()->role === 1)
+        ? route('admin.logout')
+        : route('logout');
+@endphp
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,23 +25,35 @@
             </div>
             <nav class="header_nav">
                 <ul class="nav_content">
-                    @if (Auth::check())
+                    @auth
                     <li class="nav_content-list">
+                        @if(auth()->user()->role === 1)
+                        <a href="/admin/attendance/list">勤怠一覧</a>
+                        @else
                         <a href="/attendance">勤怠</a>
+                        @endif
                     </li>
                     <li class="nav_content-list">
+                        @if(auth()->user()->role === 1)
+                        <a href="/admin/staff/list">スタッフ一覧</a>
+                        @else
                         <a href="/attendance/list">勤怠一覧</a>
+                        @endif
                     </li>
                     <li class="nav_content-list">
-                        <a href="/stamp_correction_request/list">申請</a>
+                        @if(auth()->user()->role === 1)
+                        <a href="{{ route('request.list') }}">申請一覧</a>
+                        @else
+                        <a href="{{ route('request.list') }}">申請</a>
+                        @endif
                     </li>
                     <li class="nav_content-list">
-                        <form class="logout_form" action="/logout" method="post">
+                        <form class="logout_form" action="{{ $logoutRoute }}" method="post">
                             @csrf
-                            <button class="header_nav-button">ログアウト</button>
+                            <button class="header_nav-button" type="submit">ログアウト</button>
                         </form>
                     </li>
-                    @endif
+                    @endauth
                 </ul>
             </nav>
         </div>

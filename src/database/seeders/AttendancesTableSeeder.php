@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Models\Attendance;
+use App\Models\BreakTime;
+use Carbon\Carbon;
 
 class AttendancesTableSeeder extends Seeder
 {
@@ -14,55 +18,29 @@ class AttendancesTableSeeder extends Seeder
      */
     public function run()
     {
-        $param = [
-            'user_id' => '1',
-            'date' => '2026-01-01',
-            'time_start' => '2026-01-01 10:00:00',
-            'time_end' => '2026-01-01 18:00:00',
-            'content' => '',
-        ];
-        DB::table('attendances')->insert($param);
+        $staffs = User::where('role', 0)->get();
+        $startDate = Carbon::create(2026, 1, 1);
+        $endDate = Carbon::create(2026, 1, 31);
 
-        $param = [
-            'user_id' => '1',
-            'date' => '2026-01-02',
-            'time_start' => '2026-01-02 10:00:00',
-            'time_end' => '2026-01-02 18:00:00',
-            'content' => '',
-        ];
-        DB::table('attendances')->insert($param);
+        foreach ($staffs as $staff) {
+            for ($date = clone $startDate; $date->lte($endDate); $date->addDay()) {
+                if ($date->isWeekend()) continue;
 
-        $param = [
-            'user_id' => '1',
-            'date' => '2026-01-03',
-            'time_start' => '2026-01-03 10:20:00',
-            'time_end' => '2026-01-03 18:00:00',
-            'content' => '電車遅延のため遅刻',
-        ];
-        DB::table('attendances')->insert($param);
+                $dateStr = $date->format('Y-m-d');
 
-        $param = [
-            'user_id' => '1',
-            'date' => '2026-01-04',
-            'time_start' => '2026-01-04 10:15:00',
-            'time_end' => '2026-01-04 18:00:00',
-            'content' => '遅延のため',
-            'status' => '2',
-            'created_at' => '2026-01-04 10:15:00',
-            'updated_at' => '2026-04-22 00:00:00',
-        ];
-        DB::table('attendances')->insert($param);
+                $attendance = Attendance::factory()->create([
+                    'user_id' => $staff->id,
+                    'date' => $dateStr,
+                    'time_start' => $dateStr . '' . '09:00:00',
+                    'time_end' => $dateStr . '' . '18:00:00',
+                ]);
 
-        $param = [
-            'user_id' => '1',
-            'date' => '2026-01-05',
-            'time_start' => '2026-01-05 10:00:00',
-            'time_end' => '2026-01-05 18:00:00',
-            'content' => '遅延のため',
-            'status' => '2',
-            'created_at' => '2026-01-05 10:00:00',
-            'updated_at' => '2026-04-22 00:00:00',
-        ];
-        DB::table('attendances')->insert($param);
+                BreakTime::factory()->create([
+                    'attendance_id' => $attendance->id,
+                    'break_start' => $dateStr . '' . '13:00:00',
+                    'break_end' => $dateStr . '' . '14:00:00',
+                ]);
+            }
+        }
     }
 }

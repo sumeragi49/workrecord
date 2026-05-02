@@ -9,8 +9,11 @@ class BreakRequest extends Model
 {
     use HasFactory;
 
+    protected $table = 'break_correct_requests';
+
     protected $fillable = [
-        'attendance_request_id',
+        'attendance_correct_request_id',
+        'break_id',
         'request_break_start',
         'request_break_end',
         'new_break_start',

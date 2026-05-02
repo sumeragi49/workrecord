@@ -8,12 +8,19 @@ use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Responses\LoginResponse;
+use App\Http\Responses\LogoutResponse;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -22,7 +29,9 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+
+        $this->app->singleton(LogoutResponseContract::class, LogoutResponse::class);
     }
 
     /**
@@ -52,7 +61,36 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->singleton(RegisterRequest::class, RegisterRequest::class);
 
         Fortify::loginView(function () {
+            if (request()->is('admin/*')) {
+                return view('auth.admin.login');
+            }
             return view('auth.staff.login');
+        });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+
+            if ($user && Hash::check($request->password, $user->password)) {
+
+                if ($request->is('admin/login') && $user->role !== 1) {
+                    return null;
+                }
+
+                if ($request->is('login') && $user->role !== 0) {
+                    return null;
+                }
+                return $user;
+            }
+        });
+
+        $this->app->singleton(LoginResponseContract::class, function () {
+            return new class implements LoginResponseContract {
+                public function toResponse($request)
+                {
+                    $role = auth()->user()->role;
+                    return redirect($role === 1 ? '/admin/attendance/list' : '/attendance');
+                }
+            };
         });
 
         $this->app->singleton(LoginRequest::class, LoginRequest::class);

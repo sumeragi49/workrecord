@@ -10,15 +10,15 @@
         <div class="index_title">
             <h1>❙ 勤怠一覧</h1>
         </div>
-        <form class="index-month-calender" action="{{ route('attendance.index') }}" method="get">
+        <form class="index-month-calender" action="{{ route('admin.staff.attendance', $userId) }}" method="get">
             <div class="prev_month">
-                <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}">← 前月</a>
+                <a href="{{ route('admin.staff.attendance', [$userId, 'month' => $prevMonth]) }}">← 前月</a>
             </div>
             <div class="this_month">
                 <input type="month" name="month" value="{{ $month }}" onchange="this.form.submit()">
             </div>
             <div class="next_month">
-                <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}">翌月 →</a>
+                <a href="{{ route('admin.staff.attendance', [$userId, 'month' => $nextMonth]) }}">翌月 →</a>
             </div>
         </form>
         <div class="index_container">
@@ -51,9 +51,9 @@
                             </td>
                             <td>
                                 @if($day['attendance'])
-                                    <a class="detail_attendance-link" href="{{ route('attendance.show', $day['attendance']['id']) }}">詳細</a>
+                                    <a class="detail_attendance-link" href="{{ route('admin.attendance.show', $day['attendance']['id']) }}">詳細</a>
                                 @else
-                                    <form class="form-button" action="{{ route('new.attendance') }}" method="post">
+                                    <form class="form-button" action="{{ route('admin.new.attendance', $userId) }}" method="post">
                                     @csrf
                                         <input type="hidden" name="date" value="{{ date('Y') . '-' . str_replace('/', '-', mb_substr($day['date'], 0, 5)) }}">
                                         <button type="submit" class="form-button-submit">詳細</button>

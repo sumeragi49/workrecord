@@ -25,7 +25,7 @@
     @if($status == 'working')
     <div class="attendance_form-content">
         <div class="work_status">
-            <h1>勤務中</h1>
+            <h1>出勤中</h1>
         </div>
         <div class="work_datetime">
             <h2>{{ Carbon\Carbon::now()->isoFormat('Y年M月D日(ddd)') }}</h2>
@@ -50,7 +50,7 @@
         @method('patch')
         @csrf
         <div class="work_status">
-            <h1>勤務外</h1>
+            <h1>休憩中</h1>
         </div>
         <div class="work_datetime">
             <h2>{{ Carbon\Carbon::now()->isoFormat('Y年M月D日(ddd)') }}</h2>

@@ -1,0 +1,100 @@
+.date-content {
+    width: 100%;
+    background: #f0f0f0;
+    align-items: center;
+}
+
+.date-content-item {
+    margin: 0px 20%;
+    padding-top: 50px;
+    padding-bottom: 250px;
+    width: 60%;
+}
+
+.date-title {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.date-title h1 {
+    margin: 30px auto;
+    color: #000000;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.index-date-calender {
+    margin-bottom: 30px;
+    padding: 5px;
+    background: #ffffff;
+    display: flex;
+    border: 1px solid #000000;
+    border: none;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.prev-date a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.this-date input {
+    margin: 0 auto;
+    border: none;
+}
+
+.next-date a {
+    color: #000000;
+    text-decoration: none;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0 3px;
+    border-radius: 5px;
+}
+
+table tr th:first-child {
+    border-top-left-radius: 5px;
+}
+
+table tr th:last-child {
+    border-top-right-radius: 5px;
+}
+
+table tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.table_content {
+    width: 100%;
+}
+
+.table_heading {
+    text-align: center;
+    background: #ffffff
+}
+
+.table_items {
+    text-align: center;
+    background: #ffffff
+}
+
+th {
+    font-weight: 400;
+}
+
+td {
+    font-weight: 300;
+}
+
+td a {
+    color: #000000;
+    text-decoration: none;
+}

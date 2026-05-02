@@ -172,7 +172,9 @@ class AttendanceController extends Controller
 
         $displayDate = $attendanceRequest ?: $attendances;
 
-        return view('staff.detail', compact('user', 'attendances', 'breaks', 'displayDate', 'attendanceRequest'));
+        $mode = 'edit';
+
+        return view('staff.detail', compact('mode','user', 'attendances', 'breaks', 'displayDate', 'attendanceRequest'));
     }
 
     public function requestStore(CorrectionRequest $request, $attendanceId)
@@ -198,6 +200,7 @@ class AttendanceController extends Controller
                 foreach ($request->breaks as $break) {
                     if (!empty($break['request_break_start']) && !empty($break['request_break_end'])) {
                         $attendanceRequest->breakRequests()->create([
+                            'break_id' => $request->input(['break_id']),
                             'request_break_start' => Carbon::parse($baseDate)->setTimeFromTimeString($break['request_break_start']),
                             'request_break_end' => Carbon::parse($baseDate)->setTimeFromTimeString($break['request_break_end']),
                         ]);
@@ -218,21 +221,114 @@ class AttendanceController extends Controller
         return redirect()->back();
     }
 
+    public function newAttendance(Request $request)
+    {
+        $user = Auth::user();
+
+        $targetDate = \Carbon\Carbon::parse($request->input('date'));
+
+        $mode = 'create';
+
+        return view('staff.detail', compact('targetDate', 'user', 'mode'));
+    }
+
     public function requestList(Request $request)
     {
         $user = Auth::user();
 
-        $status = $request->query('status', '1');
+        $isAdmin = $request->input('is_admin_request');
 
-        $attendances = Attendance::when($status == 1, function ($query) {
-            return $query->where('status', '1');
-        })
-                    ->when($status == 2, function ($query) {
-            return $query->where('status', '2');
-        })
-                    -> orderBy('date', 'asc')
-                    -> paginate(10);
+        if ($isAdmin) {
+            $status = $request->query('status', '1');
+
+            $attendances = Attendance::with('user')
+                        -> when($status == 1, function ($query) {
+                            return $query->where('status', '1');
+                        })->when($status == 2, function ($query) {
+                            return $query->where('status', '2');
+                        })-> orderBy('date', 'asc')
+                        -> paginate(10);
+        } else {
+            $status = $request->query('status', '1');
+
+            $attendances = Attendance::where('user_id', $user->id)
+                        -> when($status == 1, function ($query) {
+                            return $query->where('status', '1');
+                        })->when($status == 2, function ($query) {
+                            return $query->where('status', '2');
+                        })-> orderBy('date', 'asc')
+                        -> paginate(10);
+        }
 
         return view('staff.requestList',compact('user', 'status', 'attendances'));
+    }
+
+    public function approval(Request $request,$attendanceCorrectRequestId)
+    {
+        $user = Auth::user();
+
+        $isAdmin = $request->input('is_admin_request');
+
+        if ($isAdmin) {
+
+            $attendanceRequest = AttendanceRequest::with('attendance.user','breakRequests')
+                          -> findOrFail($attendanceCorrectRequestId);
+
+            $breakRequests = $attendanceRequest->breakRequests->toArray();
+
+            $mode = 'approval';
+
+        } else {
+            $attendanceRequest = AttendanceRequest::with('attendance.user','breakRequests')
+                          -> findOrFail($attendanceCorrectRequestId);
+
+            $breakRequests = $attendanceRequest->breakRequests->toArray();
+
+            $mode = 'unApproval';
+        }
+
+        return view('staff.detail', compact('mode', 'attendanceRequest', 'breakRequests'));
+    }
+
+    public function approvalStore(Request $request, $attendanceRequestId)
+    {
+        $user = Auth::user();
+
+        $correctRecord = AttendanceRequest::with('attendance', 'breakRequests')->findOrFail($attendanceRequestId);
+
+        $baseDate = Carbon::parse($correctRecord->attendance['date']);
+
+        DB::transaction(function () use ($correctRecord, $baseDate, $attendanceRequestId) {
+
+            $attendance = Attendance::findOrFail($correctRecord->attendance_id);
+            $attendance->update([
+                'time_start' => $baseDate->copy()->setTimeFromTimeString($correctRecord['request_time_start']),
+                'time_end' => $baseDate->copy()->setTimeFromTimeString($correctRecord['request_time_end']),
+                'status' => 2,
+                'content' => $correctRecord['request_content'],
+            ]);
+
+            foreach ($correctRecord->breakRequests as $breakRequest) {
+                if ($breakRequest->break_id && $breakRequest->request_break_start) {
+                    $originalBreak = BreakTime::findOrFail($breakRequest->break_id);
+                    if ($originalBreak) {
+                        $originalBreak->update([
+                            'break_start' => $baseDate->copy()->setTimeFromTimeString($breakRequest['request_break_start']),
+                            'break_end' => $baseDate->copy()->setTimeFromTimeString($breakRequest['request_break_end']),
+                        ]);
+                    }
+                }
+
+                if ($breakRequest->new_break_start) {
+                    BreakTime::create ([
+                        'attendance_id' => $attendance['id'],
+                        'break_start' => $baseDate->copy()->setTimeFromTimeString($breakRequest['new_break_start']),
+                        'break_end' => $baseDate->copy()->setTimeFromTimeString($breakRequest['new_break_end']),
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->back();
     }
 }

@@ -131,7 +131,10 @@ return [
     |
     */
 
-    'views' => true,
+    'views' => [
+        'login' => 'auth.staff.login',
+        'admin/login' => 'auth.admin.login',
+    ],
 
     /*
     |--------------------------------------------------------------------------

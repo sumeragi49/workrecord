@@ -12,8 +12,8 @@
         </div>
         <div class="request-content-item">
             <div class="request-status">
-                <a href="{{ route('request.list', ['status' => '1']) }}" class="tab-link {{ request('status', 1) == 1 ? 'is-active' : '' }}">承認待ち</a>
-                <a href="{{ route('request.list', ['status' => '2']) }}" class="tab-link {{ request('status', 2) == 2 ? 'is-active' : '' }}">承認済み</a>
+                <a href="{{ route('request.list', ['status' => '1']) }}" class="tab-link {{ $status == 1 ? 'is-active' : '' }}">承認待ち</a>
+                <a href="{{ route('request.list', ['status' => '2']) }}" class="tab-link {{ $status == 2 ? 'is-active' : '' }}">承認済み</a>
             </div>
             <div class="request-list-table">
                 <table class="table-content">
@@ -37,12 +37,12 @@
                                     <span>承認済み</span>
                                     @endif
                                 </td>
-                                <td>{{ $user['name'] }}</td>
+                                <td>{{ $attendance['user']['name'] }}</td>
                                 <td>{{ $attendance['date']->format('Y/m/d') }}</td>
                                 <td>{{ $attendance['content'] }}</td>
                                 <td>{{ $attendance['updated_at']->format('Y/m/d') }}</td>
                                 <td>
-                                    <a class="detail-attendance-link" href="{{ route('attendance.show', $attendance['id']) }}">詳細</a>
+                                    <a class="detail-attendance-link" href="{{ route('request.approval', $attendance['attendanceRequest']['id']) }}">詳細</a>
                                 </td>
                             </tr>
                         @endforeach
